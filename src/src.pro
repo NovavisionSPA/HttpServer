@@ -77,6 +77,6 @@ unix: LIBS += -lz
 
 unix
 {
-    target.path = /home/root/lib
+    target.path = $$APP_DIR/lib
     INSTALLS += target
 }
