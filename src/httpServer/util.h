@@ -203,15 +203,17 @@ struct QStringCaseInSensitiveEqual
 namespace std
 {
     // Default hash and comparator for QString is case-sensitive
-    // template<> struct hash<QString>
-    // {
-    //     size_t operator()(const QString &str) const
-    //     {
-    //         static const unsigned int seed = (unsigned int)qGlobalQHashSeed();
+#ifdef OS2_0_5
+     template<> struct hash<QString>
+     {
+         size_t operator()(const QString &str) const
+         {
+             static const unsigned int seed = (unsigned int)qGlobalQHashSeed();
 
-    //         return qHash(str, seed);
-    //     }
-    // };
+             return qHash(str, seed);
+         }
+     };
+#endif
 
     template<> struct equal_to<QString>
     {

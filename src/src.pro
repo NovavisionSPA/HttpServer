@@ -80,3 +80,10 @@ unix
     target.path = $$APP_DIR/lib
     INSTALLS += target
 }
+
+equals (OS2_0_5, 1) {
+DEFINES += OS2_0_5
+}
+equals (OS3_0, 1) {
+DEFINES += OS3_0
+}
