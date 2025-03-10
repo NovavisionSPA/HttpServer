@@ -1,8 +1,10 @@
 #include "httpServer.h"
+#include "../../DeviceManager/include/novalogger.h"
 
 HttpServer::HttpServer(const HttpServerConfig &config, HttpRequestHandler *requestHandler, QObject *parent) : QTcpServer(parent), config(config), requestHandler(requestHandler),
     sslConfig(nullptr)
 {
+    NOVA_LOG(NOVA_INFO) << "########################################## TEST LOG ########################################################";
     setMaxPendingConnections(config.maxPendingConnections);
     loadSslConfig();
 }
@@ -12,7 +14,7 @@ bool HttpServer::listen()
     if (!QTcpServer::listen(config.host, config.port))
     {
         if (config.verbosity >= HttpServerConfig::Verbose::Warning)
-            qWarning().noquote() << QString("Unable to listen on %1:%2: %3").arg(config.host.toString()).arg(config.port).arg(errorString());
+            NOVA_LOG(NOVA_ERROR) << QString("Unable to listen on %1:%2: %3").arg(config.host.toString()).arg(config.port).arg(errorString());
 
         return false;
     }
@@ -37,7 +39,7 @@ void HttpServer::loadSslConfig()
         if (!QSslSocket::supportsSsl())
         {
             if (config.verbosity >= HttpServerConfig::Verbose::Warning)
-                qWarning().noquote() << QString("OpenSSL is not supported for HTTP server (OpenSSL Qt build version: %1). Disabling TLS")
+                NOVA_LOG(NOVA_ERROR) << QString("OpenSSL is not supported for HTTP server (OpenSSL Qt build version: %1). Disabling TLS")
                                         .arg(QSslSocket::sslLibraryBuildVersionString());
 
             return;
@@ -48,7 +50,7 @@ void HttpServer::loadSslConfig()
         if (!certFile.open(QIODevice::ReadOnly))
         {
             if (config.verbosity >= HttpServerConfig::Verbose::Warning)
-                qWarning().noquote() << QString("Failed to open SSL certificate file for HTTP server: %1 (%2). Disabling TLS").arg(config.sslCertPath).arg(certFile.errorString());
+                NOVA_LOG(NOVA_ERROR) << QString("Failed to open SSL certificate file for HTTP server: %1 (%2). Disabling TLS").arg(config.sslCertPath).arg(certFile.errorString());
 
             return;
         }
@@ -59,7 +61,7 @@ void HttpServer::loadSslConfig()
         if (certificate.isNull())
         {
             if (config.verbosity >= HttpServerConfig::Verbose::Warning)
-                qWarning().noquote() << QString("Invalid SSL certificate file for HTTP server: %1. Disabling TLS").arg(config.sslCertPath);
+                NOVA_LOG(NOVA_ERROR) << QString("Invalid SSL certificate file for HTTP server: %1. Disabling TLS").arg(config.sslCertPath);
 
             return;
         }
@@ -69,7 +71,7 @@ void HttpServer::loadSslConfig()
         if (!keyFile.open(QIODevice::ReadOnly))
         {
             if (config.verbosity >= HttpServerConfig::Verbose::Warning)
-                qWarning().noquote() << QString("Failed to open private SSL key file for HTTP server: %1 (%2). Disabling TLS").arg(config.sslKeyPath).arg(keyFile.errorString());
+                NOVA_LOG(NOVA_ERROR) << QString("Failed to open private SSL key file for HTTP server: %1 (%2). Disabling TLS").arg(config.sslKeyPath).arg(keyFile.errorString());
 
             return;
         }
@@ -80,7 +82,7 @@ void HttpServer::loadSslConfig()
         if (sslKey.isNull())
         {
             if (config.verbosity >= HttpServerConfig::Verbose::Warning)
-                qWarning().noquote() << QString("Invalid private SSL key for HTTP server: %1. Disabling TLS").arg(config.sslKeyPath);
+                NOVA_LOG(NOVA_ERROR) << QString("Invalid private SSL key for HTTP server: %1. Disabling TLS").arg(config.sslKeyPath);
 
             return;
         }
